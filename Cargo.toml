@@ -3,5 +3,8 @@ name = "arch_sim"
 version = "0.1.0"
 authors = ["Haorna Wang <waharaxn@gmail.com>"]
 edition = "2018"
+description = "A brand new computer architecture written in rust lang."
 
 [dependencies]
+libc = "0.2"
+sys-info = "0.5.6"
