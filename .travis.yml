@@ -10,4 +10,4 @@ matrix:
   script:
   - cargo build --verbose --all
   - cargo test --verbose --all
-  - cargo run --verbose --all -- arch_config.json
+  - cargo run --verbose -- arch_config.json
