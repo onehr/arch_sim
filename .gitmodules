@@ -1,0 +1,3 @@
+[submodule "rvemu"]
+	path = rvemu
+	url = git@github.com:onehr/rvemu.git
