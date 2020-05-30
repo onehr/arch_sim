@@ -17,6 +17,9 @@
 //! function.
 
 use sys_info;
+use serde::{Deserialize, Serialize};
+use serde_json;
+use std::{env, fmt};
 const PROJ: &'static str = env!("CARGO_PKG_NAME");
 const NAME: &'static str = env!("CARGO_PKG_DESCRIPTION");
 const VER: &'static str = env!("CARGO_PKG_VERSION");
@@ -26,14 +29,14 @@ const LICENSE: &'static str = "Apache License 2.0";
 pub fn print_info() {
     eprintln!("{}(v {}): {}", PROJ, VER, NAME);
     eprintln!("Released under {}", LICENSE);
-    eprintln!("Copyright 2019 {}", AUTHORS);
+    eprintln!("Copyright 2020 {}", AUTHORS);
 }
 
 pub fn print_usage() {
     print_info();
     println!();
     println!("Usage:");
-    println!("        cargo run -q -- [configuration_file]");
+    println!("        cargo run -- [configuration_file]");
     println!();
 }
 
@@ -42,57 +45,29 @@ pub fn say_hello() {
     eprintln!("\n[arch_sim] running on {}", sys_info::hostname().unwrap());
 }
 
-fn remove_comment(input: String) -> std::io::Result<String> {
-    fn in_comment(single: bool) -> bool {
-        return single;
-    }
-    let mut res = String::new();
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ConfigInfo {
+    num_cpus: usize,
+}
 
-    let mut idx = 0;
-    let mut single_line_in_comment = false;
-    while idx < input.len() {
-        if idx == input.len() - 1 {
-            if single_line_in_comment {
-                break;
-            } else {
-                res.push(char::from(input.as_bytes()[idx]));
-                break;
-            }
-        }
-        let b1 = char::from(input.as_bytes()[idx]);
-        let b2 = char::from(input.as_bytes()[idx + 1]);
-
-        let mut combine = String::new();
-        combine.push(b1);
-        combine.push(b2);
-        match combine.as_ref() {
-            "//" => {
-                if !in_comment(single_line_in_comment) {
-                    single_line_in_comment = true;
-                }
-                idx = idx + 2;
-            }
-            _ => {
-                if b1 == '\n' && single_line_in_comment {
-                    single_line_in_comment = false;
-                    idx = idx + 1;
-                } else {
-                    if in_comment(single_line_in_comment) {
-                        idx = idx + 1;
-                    } else {
-                        res.push(b1);
-                        idx = idx + 1;
-                    }
-                }
-            }
-        }
+impl fmt::Display for ConfigInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // The `f` value implements the `Write` trait, which is what the
+        // write! macro is expecting. Note that this formatting ignores the
+        // various flags provided to format strings.
+        write!(f, "num_cores: {}\n", self.num_cpus)
     }
-    return Ok(res);
+}
+
+impl ConfigInfo {
+    pub fn get_num_cpus(&self) -> usize {
+        self.num_cpus
+    }
 }
 
 /// process the configuration file, and extract information we need, and pass
 /// those informations to the simulator
-pub fn process_config_file(file_name: &String) -> std::io::Result<()> {
+pub fn process_config_file(file_name: &String) -> std::io::Result<ConfigInfo> {
     use std::fs::File;
     use std::io::prelude::*;
     use std::io::BufReader;
@@ -100,19 +75,7 @@ pub fn process_config_file(file_name: &String) -> std::io::Result<()> {
     let mut buf_reader = BufReader::new(file);
     let mut contents = String::new();
     buf_reader.read_to_string(&mut contents)?;
-    let contents = remove_comment(contents)?;
+    let config: ConfigInfo = serde_json::from_str(&contents)?;
 
-    // iterate through every line of the configuration file, and extract the
-    // information
-    eprintln!("[configuration]:");
-    for line in contents.lines() {
-        if line.is_empty() {
-            continue;
-        }
-        let line_arg: Vec<&str> = line.split_whitespace().collect();
-        let var = line_arg.get(0).unwrap();
-        let val = line_arg.get(1).unwrap();
-        eprintln!("{}: {}", var, val);
-    }
-    Ok(())
+    Ok(config)
 }

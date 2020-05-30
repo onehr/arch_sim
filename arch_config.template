@@ -1,6 +1,0 @@
-// this is the file for architecture configuration.
-// should follow the rules:
-// 1. line comment with // ...
-// 2. var val 
-num_cpus 1
-mem_size 100 //size would be in MB

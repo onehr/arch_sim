@@ -18,7 +18,8 @@ able to run kernel and workloads.
 ## Run
 
 ``` sh
-$ cargo run -- arch_config.template
+# currently using json file as the configuration format
+$ cargo run -- arch_config.json
 ```
 
 # Copyright
