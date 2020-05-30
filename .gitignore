@@ -2,3 +2,5 @@
 **/*.rs.bk
 
 .idea
+rvemu.dtb
+rvemu.dts
