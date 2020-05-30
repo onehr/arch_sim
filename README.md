@@ -15,6 +15,13 @@ able to run kernel and workloads.
 - [ ] risc-v
 
 # Workflow
+## Getting the sources
+This repository uses submodules. Clone with --recursive option.
+
+``` sh
+$ git clone --recursive https://github.com/onehr/arch_sim.git
+```
+
 ## Run
 
 ``` sh
