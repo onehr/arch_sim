@@ -6,4 +6,4 @@ build_jobs=12
 build:
 	cargo build --jobs $(build_jobs)
 run:
-	cargo run -q -- arch_config.template
+	cargo run -q -- arch_config.json

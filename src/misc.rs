@@ -16,10 +16,10 @@
 //! this is file for utility functions that are needed by the simulator entry
 //! function.
 
-use sys_info;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::{env, fmt};
+use sys_info;
 const PROJ: &'static str = env!("CARGO_PKG_NAME");
 const NAME: &'static str = env!("CARGO_PKG_DESCRIPTION");
 const VER: &'static str = env!("CARGO_PKG_VERSION");
